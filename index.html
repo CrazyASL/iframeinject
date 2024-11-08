@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fancy Iframe Injector</title>
+    <title>InjectJS</title>
     <style>
         /* Global Styles */
         body {
@@ -34,9 +34,12 @@
             width: 80%;
             max-width: 1000px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Iframe Styles */
+        /* Iframe Section */
         iframe {
             border: 3px solid #007bff;
             border-radius: 15px;
@@ -44,12 +47,50 @@
             height: 400px;
             outline: none;
             margin-top: 20px;
+            transition: height 0.3s ease;
+        }
+
+        iframe.fullscreen {
+            height: 100vh;
+        }
+
+        /* Link Input Section */
+        .link-input-container {
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .link-input-container input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .link-input-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .link-input-container button:hover {
+            background-color: #0056b3;
         }
 
         /* Bookmarklet Section */
         .bookmarklet-container {
             margin-top: 20px;
             text-align: left;
+            width: 100%;
             border-top: 2px dashed #ccc;
             padding-top: 20px;
         }
@@ -63,50 +104,44 @@
             border-radius: 8px;
         }
 
-        .bookmarklet-container button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .bookmarklet-container .bookmarklet-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .bookmarklet-container button:hover {
+        .bookmarklet-container .bookmarklet-button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .bookmarklet-container .bookmarklet-button:hover {
             background-color: #0056b3;
         }
 
-        /* HTML/JS Injection Section */
-        .inject-container {
-            margin-top: 30px;
-            text-align: left;
-            border-top: 2px dashed #ccc;
-            padding-top: 20px;
-        }
-
-        .inject-container textarea {
-            width: 100%;
-            height: 200px;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            resize: vertical;
-        }
-
-        .inject-container button {
-            padding: 10px 20px;
+        /* Fullscreen Toggle Button */
+        .fullscreen-toggle {
             background-color: #28a745;
             color: #fff;
+            padding: 10px;
             font-size: 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
         }
 
-        .inject-container button:hover {
+        .fullscreen-toggle:hover {
             background-color: #218838;
         }
     </style>
@@ -115,28 +150,66 @@
     <div class="container">
         <h1>Fancy Iframe Injector</h1>
 
+        <!-- Link Input Section (for typing URLs directly) -->
+        <div class="link-input-container">
+            <input type="text" id="url-input" placeholder="Type a link to load in iframe">
+            <button onclick="loadLink()">Load Link</button>
+        </div>
+
         <!-- Iframe Section -->
         <iframe id="iframe" src="about:blank" sandbox="allow-scripts allow-same-origin"></iframe>
+
+        <button class="fullscreen-toggle" onclick="toggleFullscreen()">Toggle Fullscreen</button>
 
         <!-- Bookmarklet Section -->
         <div class="bookmarklet-container">
             <h2>Bookmarklet Input</h2>
             <input type="text" id="bookmarklet" placeholder="Paste your bookmarklet here">
-            <button onclick="loadBookmarklet()">Inject Bookmarklet</button>
-        </div>
+            <button onclick="addBookmarklet()">Add Bookmarklet</button>
 
-        <!-- HTML/JS Injection Section -->
-        <div class="inject-container">
-            <h2>Inject HTML/JS</h2>
-            <textarea id="html-js-input" placeholder="Paste HTML/JS here to inject into iframe"></textarea>
-            <button onclick="injectHTMLJS()">Inject</button>
+            <div class="bookmarklet-list" id="bookmarklet-list">
+                <!-- Bookmarklets will appear here -->
+            </div>
         </div>
     </div>
 
     <script>
-        // Function to load and run a bookmarklet in the iframe
-        function loadBookmarklet() {
+        // Function to load the typed link into the iframe
+        function loadLink() {
+            const url = document.getElementById('url-input').value;
+            if (url) {
+                const iframe = document.getElementById('iframe');
+                iframe.src = url;
+                document.getElementById('url-input').value = ''; // Clear the input
+            } else {
+                alert('Please type a valid URL.');
+            }
+        }
+
+        // Function to toggle fullscreen for the iframe
+        function toggleFullscreen() {
+            const iframe = document.getElementById('iframe');
+            iframe.classList.toggle('fullscreen');
+        }
+
+        // Function to add a bookmarklet
+        function addBookmarklet() {
             const bookmarkletCode = document.getElementById('bookmarklet').value;
+            const bookmarkletList = document.getElementById('bookmarklet-list');
+            if (bookmarkletCode.trim()) {
+                const button = document.createElement('button');
+                button.classList.add('bookmarklet-button');
+                button.innerText = "Bookmarklet " + (bookmarkletList.children.length + 1);
+                button.onclick = function() {
+                    injectBookmarklet(bookmarkletCode);
+                };
+                bookmarkletList.appendChild(button);
+                document.getElementById('bookmarklet').value = ''; // Clear input
+            }
+        }
+
+        // Function to inject the bookmarklet code into the iframe
+        function injectBookmarklet(bookmarkletCode) {
             const iframe = document.getElementById('iframe');
             const iframeDocument = iframe.contentWindow.document;
 
@@ -146,22 +219,7 @@
                 script.innerHTML = bookmarkletCode;
                 iframeDocument.body.appendChild(script);
             } catch (error) {
-                alert('Error loading bookmarklet: ' + error);
-            }
-        }
-
-        // Function to inject custom HTML/JS into the iframe
-        function injectHTMLJS() {
-            const inputContent = document.getElementById('html-js-input').value;
-            const iframe = document.getElementById('iframe');
-            const iframeDocument = iframe.contentWindow.document;
-
-            try {
-                iframeDocument.open();
-                iframeDocument.write(inputContent);
-                iframeDocument.close();
-            } catch (error) {
-                alert('Error injecting content: ' + error);
+                alert('Error injecting bookmarklet: ' + error);
             }
         }
     </script>
