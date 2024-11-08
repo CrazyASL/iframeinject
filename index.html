@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Iframe Injector</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 80%;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        /* Iframe Styles */
+        iframe {
+            border: 3px solid #007bff;
+            border-radius: 15px;
+            width: 100%;
+            height: 400px;
+            outline: none;
+            margin-top: 20px;
+        }
+
+        /* Bookmarklet Section */
+        .bookmarklet-container {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+
+        .bookmarklet-container input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+        }
+
+        .bookmarklet-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .bookmarklet-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* HTML/JS Injection Section */
+        .inject-container {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+
+        .inject-container textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .inject-container button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .inject-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fancy Iframe Injector</h1>
+
+        <!-- Iframe Section -->
+        <iframe id="iframe" src="about:blank" sandbox="allow-scripts allow-same-origin"></iframe>
+
+        <!-- Bookmarklet Section -->
+        <div class="bookmarklet-container">
+            <h2>Bookmarklet Input</h2>
+            <input type="text" id="bookmarklet" placeholder="Paste your bookmarklet here">
+            <button onclick="loadBookmarklet()">Inject Bookmarklet</button>
+        </div>
+
+        <!-- HTML/JS Injection Section -->
+        <div class="inject-container">
+            <h2>Inject HTML/JS</h2>
+            <textarea id="html-js-input" placeholder="Paste HTML/JS here to inject into iframe"></textarea>
+            <button onclick="injectHTMLJS()">Inject</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to load and run a bookmarklet in the iframe
+        function loadBookmarklet() {
+            const bookmarkletCode = document.getElementById('bookmarklet').value;
+            const iframe = document.getElementById('iframe');
+            const iframeDocument = iframe.contentWindow.document;
+
+            try {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.innerHTML = bookmarkletCode;
+                iframeDocument.body.appendChild(script);
+            } catch (error) {
+                alert('Error loading bookmarklet: ' + error);
+            }
+        }
+
+        // Function to inject custom HTML/JS into the iframe
+        function injectHTMLJS() {
+            const inputContent = document.getElementById('html-js-input').value;
+            const iframe = document.getElementById('iframe');
+            const iframeDocument = iframe.contentWindow.document;
+
+            try {
+                iframeDocument.open();
+                iframeDocument.write(inputContent);
+                iframeDocument.close();
+            } catch (error) {
+                alert('Error injecting content: ' + error);
+            }
+        }
+    </script>
+</body>
+</html>
